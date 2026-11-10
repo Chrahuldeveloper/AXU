@@ -33,10 +33,13 @@ export const Home = () => {
     checkSetup();
   }, []);
 
-  const handleBarcodeScanned = async () => {
+  const handleBarcodeScanned = async ({  data }:any) => {
     if (scannedRef.current) return;
 
     scannedRef.current = true;
+
+    console.log('QR Content:', data);
+
 
     try {
       await AsyncStorage.setItem('scanned', 'true');
