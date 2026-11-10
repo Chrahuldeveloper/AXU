@@ -87,7 +87,6 @@ export const Home = () => {
           onBarcodeScanned={handleBarcodeScanned}
         />
 
-        {/* Scanner overlay */}
         <View className="absolute inset-0 items-center justify-center">
 
           <Text className="mb-3 text-2xl font-bold text-white">
@@ -109,8 +108,6 @@ export const Home = () => {
       </View>
     );
   }
-
-  // AFTER SCANNING: EXISTING CHARGESYNC UI
 
   const isCharging =
     battery.batteryState === Battery.BatteryState.CHARGING;
