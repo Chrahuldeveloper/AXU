@@ -538,10 +538,6 @@ footer {
       Keep your phone nearby while connecting
     </div>
 
-    <button class="pair-button" onclick="showDashboard()">
-      I've scanned the QR code
-    </button>
-
   </div>
 
 
@@ -638,37 +634,8 @@ footer {
 
 </div>
 
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<script>
-
-const qrContainer = document.getElementById("qrcode");
-
-new QRCode(qrContainer, {
-  text: "chargesync://pair?token=demo",
-  width: 164,
-  height: 164,
-  colorDark: "#071421",
-  colorLight: "#ffffff",
-  correctLevel: QRCode.CorrectLevel.H
-});
-
-
-function showDashboard() {
-
-  const pairScreen = document.getElementById("pairScreen");
-  const dashboard = document.getElementById("dashboard");
-
-  pairScreen.classList.add("hidden");
-
-    pairScreen.style.display = "none";
-    dashboard.classList.remove("hidden");
-
-}
-
-</script>
-
+<script src="./index.js"></script>
 </body>
 </html>
