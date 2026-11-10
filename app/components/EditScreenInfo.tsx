@@ -3,7 +3,6 @@ import { Text, View } from 'react-native';
 import * as Battery from 'expo-battery';
 import { useEffect, useState } from 'react';
 
-
 export const EditScreenInfo = () => {
 
   const [isCharging, setIsCharging] = useState<boolean>(false)
@@ -166,15 +165,6 @@ export const EditScreenInfo = () => {
           </Text>
         </View>
 
-        <View className="mt-6 flex-row items-center justify-between border-t border-[#1c222b] pt-6">
-          <Text className="text-xs text-[#8192a8]">
-            Last successful sync
-          </Text>
-
-          <Text className="text-xs font-medium text-[#dce5f1]">
-            7:20 PM
-          </Text>
-        </View>
 
       </View>
     </View>

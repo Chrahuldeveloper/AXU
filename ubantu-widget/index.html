@@ -63,6 +63,149 @@ body {
   -webkit-app-region: no-drag;
 }
 
+/* =========================
+   QR PAIRING SCREEN
+========================= */
+
+.pair-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 28px;
+  text-align: center;
+
+  background: rgba(20, 29, 42, 0.96);
+  backdrop-filter: blur(35px);
+  -webkit-backdrop-filter: blur(35px);
+
+  border-radius: 28px;
+
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+
+.pair-screen.hidden {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+
+.pair-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+
+  background: rgba(51,174,238,0.15);
+  border: 1px solid rgba(91,202,255,0.2);
+
+  color: #8de3ff;
+  font-size: 25px;
+
+  margin-bottom: 25px;
+}
+
+.pair-title {
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -0.7px;
+}
+
+.pair-description {
+  max-width: 240px;
+  color: rgba(220,235,250,0.55);
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 10px;
+}
+
+.qr-frame {
+  width: 190px;
+  height: 190px;
+  margin: 27px 0 22px;
+  padding: 13px;
+
+  border-radius: 23px;
+  background: white;
+
+  box-shadow:
+    0 0 35px rgba(48,180,255,0.18),
+    0 0 80px rgba(48,180,255,0.08);
+}
+
+#qrcode {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#qrcode img,
+#qrcode canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+}
+
+.pair-instruction {
+  color: #9bdcff;
+  font-size: 11px;
+  font-weight: 550;
+}
+
+.pair-hint {
+  color: rgba(220,235,250,0.38);
+  font-size: 9px;
+  margin-top: 8px;
+}
+
+.pair-button {
+  margin-top: 24px;
+  padding: 10px 20px;
+
+  border: 1px solid rgba(91,202,255,0.2);
+  border-radius: 20px;
+
+  color: #b9eaff;
+  background: rgba(49,166,230,0.12);
+
+  font-size: 10px;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+
+  transition: background 0.2s ease;
+}
+
+.pair-button:hover {
+  background: rgba(49,166,230,0.22);
+}
+
+/* =========================
+   MAIN DASHBOARD
+========================= */
+
+.dashboard {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard.hidden {
+  display: none;
+}
+
 header {
   display: flex;
   align-items: center;
@@ -81,10 +224,13 @@ header {
   width: 35px;
   height: 35px;
   border-radius: 12px;
+
   display: grid;
   place-items: center;
+
   color: #8de3ff;
   font-size: 21px;
+
   background: rgba(51,174,238,0.15);
   border: 1px solid rgba(91,202,255,0.18);
 }
@@ -104,6 +250,29 @@ header {
   color: rgba(220,235,250,0.45);
   letter-spacing: 1.1px;
   margin-top: 3px;
+}
+
+.live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 10px;
+  border-radius: 20px;
+
+  font-size: 9px;
+  color: #9ce9ca;
+
+  background: rgba(69,211,157,0.09);
+  border: 1px solid rgba(69,211,157,0.12);
+}
+
+.live span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #55dfa9;
+  box-shadow: 0 0 8px #55dfa9;
 }
 
 .main-content {
@@ -136,14 +305,23 @@ header {
   width: 180px;
   height: 180px;
   border-radius: 50%;
+
   background: rgba(42,179,255,0.16);
   filter: blur(48px);
+
   animation: breathe 4s ease-in-out infinite;
 }
 
 @keyframes breathe {
-  0%, 100% { opacity: 0.65; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.12); }
+  0%, 100% {
+    opacity: 0.65;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
 }
 
 .battery {
@@ -151,9 +329,12 @@ header {
   width: 82px;
   height: 137px;
   padding: 5px;
+
   border-radius: 19px;
   border: 2px solid rgba(125,210,255,0.65);
+
   background: rgba(10,35,53,0.42);
+
   box-shadow:
     0 0 25px rgba(43,180,255,0.18),
     inset 0 0 15px rgba(43,180,255,0.08);
@@ -165,6 +346,7 @@ header {
   height: 5px;
   top: -7px;
   left: 24px;
+
   border-radius: 5px 5px 0 0;
   background: #65d6ff;
   box-shadow: 0 0 9px rgba(65,195,255,0.7);
@@ -176,13 +358,16 @@ header {
   left: 5px;
   right: 5px;
   height: 76%;
+
   border-radius: 12px;
+
   background: linear-gradient(
     180deg,
     #9beaff,
     #45c5f5 48%,
     #168bd4
   );
+
   box-shadow: 0 0 20px rgba(52,190,255,0.38);
 }
 
@@ -191,6 +376,7 @@ header {
   position: absolute;
   inset: 0;
   border-radius: inherit;
+
   background: linear-gradient(
     110deg,
     rgba(255,255,255,0.18),
@@ -228,11 +414,14 @@ header {
   display: flex;
   align-items: center;
   gap: 7px;
+
   margin-top: 17px;
   padding: 8px 13px;
+
   border-radius: 20px;
   color: #a9dfff;
   font-size: 10px;
+
   background: rgba(49,166,230,0.10);
   border: 1px solid rgba(90,190,255,0.12);
 }
@@ -261,11 +450,14 @@ footer {
 .device-icon {
   width: 37px;
   height: 37px;
+
   display: grid;
   place-items: center;
+
   border-radius: 12px;
   color: #8bdcff;
   font-size: 17px;
+
   background: rgba(80,170,225,0.12);
   border: 1px solid rgba(255,255,255,0.07);
 }
@@ -283,9 +475,11 @@ footer {
 
 .connection {
   margin-left: auto;
+
   display: flex;
   align-items: center;
   gap: 5px;
+
   color: #8ee4bd;
   font-size: 9px;
 }
@@ -294,58 +488,187 @@ footer {
   font-size: 10px;
 }
 
+.last-sync {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 14px;
+  padding-top: 12px;
+
+  border-top: 1px solid rgba(255,255,255,0.07);
+
+  color: rgba(220,235,250,0.42);
+  font-size: 9px;
+}
+
+.last-sync strong {
+  color: rgba(235,245,255,0.75);
+  font-weight: 500;
+}
+
 </style>
 </head>
 
 <body>
+
 <div class="widget-container drag-region">
 
-  <header>
-    <div class="brand">
-      <div class="brand-logo">ϟ</div>
-      <div>
-        <div class="brand-name">Charge<span>Sync</span></div>
-        <div class="version">DESKTOP COMPANION</div>
+  <!-- QR PAIRING SCREEN -->
+
+  <div class="pair-screen" id="pairScreen">
+
+    <div class="pair-icon">ϟ</div>
+
+    <div class="pair-title">Connect your phone</div>
+
+    <p class="pair-description">
+      Scan this QR code with your ChargeSync mobile app
+      to connect your phone to this desktop.
+    </p>
+
+    <div class="qr-frame">
+      <div id="qrcode"></div>
+    </div>
+
+    <div class="pair-instruction">
+      Scan to pair your device
+    </div>
+
+    <div class="pair-hint">
+      Keep your phone nearby while connecting
+    </div>
+
+    <button class="pair-button" onclick="showDashboard()">
+      I've scanned the QR code
+    </button>
+
+  </div>
+
+
+
+  <div class="dashboard hidden" id="dashboard">
+
+    <header>
+
+      <div class="brand">
+        <div class="brand-logo">ϟ</div>
+
+        <div>
+          <div class="brand-name">
+            Charge<span>Sync</span>
+          </div>
+
+          <div class="version">
+            DESKTOP COMPANION
+          </div>
+        </div>
       </div>
-    </div>
-  </header>
 
-  <section class="main-content no-drag">
-    <div class="device-label">PHONE BATTERY</div>
-
-    <div class="battery-wrapper">
-      <div class="battery-glow"></div>
-      <div class="battery">
-        <div class="battery-cap"></div>
-        <div class="battery-fill"></div>
+      <div class="live">
+        <span></span>
+        LIVE
       </div>
-    </div>
 
-    <div class="percentage">
-      <h1>84</h1><span>%</span>
-    </div>
+    </header>
 
-    <p class="battery-caption">Your device is looking healthy</p>
 
-    <div class="charging-status">
-      <span class="dot"></span>
-      Discharging
-    </div>
-  </section>
+    <section class="main-content no-drag">
 
-  <footer class="no-drag">
-    <div class="device-info">
-      <div class="device-icon">⌘</div>
-      <div class="device-details">
-        <strong>Ubuntu Desktop</strong>
-        <p>Desktop companion</p>
+      <div class="device-label">
+        PHONE BATTERY
       </div>
-      <div class="connection"><span>●</span> Connected</div>
-    </div>
+
+      <div class="battery-wrapper">
+
+        <div class="battery-glow"></div>
+
+        <div class="battery">
+
+          <div class="battery-cap"></div>
+
+          <div class="battery-fill"></div>
+
+        </div>
+
+      </div>
+
+      <div class="percentage">
+        <h1>84</h1>
+        <span>%</span>
+      </div>
+
+      <p class="battery-caption">
+        Your device is looking healthy
+      </p>
+
+      <div class="charging-status">
+        <span class="dot"></span>
+        Discharging
+      </div>
+
+    </section>
 
 
-  </footer>
+    <footer class="no-drag">
+
+      <div class="device-info">
+
+        <div class="device-icon">⌘</div>
+
+        <div class="device-details">
+          <strong>Ubuntu Desktop</strong>
+          <p>Desktop companion</p>
+        </div>
+
+        <div class="connection">
+          <span>●</span>
+          Connected
+        </div>
+
+      </div>
+
+      <div class="last-sync">
+        <span>LAST SYNC</span>
+        <strong>Just now</strong>
+      </div>
+
+    </footer>
+
+  </div>
 
 </div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+
+const qrContainer = document.getElementById("qrcode");
+
+new QRCode(qrContainer, {
+  text: "chargesync://pair?token=demo",
+  width: 164,
+  height: 164,
+  colorDark: "#071421",
+  colorLight: "#ffffff",
+  correctLevel: QRCode.CorrectLevel.H
+});
+
+
+function showDashboard() {
+
+  const pairScreen = document.getElementById("pairScreen");
+  const dashboard = document.getElementById("dashboard");
+
+  pairScreen.classList.add("hidden");
+
+    pairScreen.style.display = "none";
+    dashboard.classList.remove("hidden");
+
+}
+
+</script>
+
 </body>
 </html>
