@@ -1,14 +1,12 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import {  View } from 'react-native';
 
-import { EditScreenInfo } from './EditScreenInfo';
-
+import { Home } from './Home';
 
 
 export const ScreenContent = () => {
   return (
   <View className="flex-1">
-  <EditScreenInfo/>
+  <Home/>
   </View>  );
 };
 

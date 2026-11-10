@@ -1,21 +1,119 @@
 
-import { Text, View } from 'react-native';
+import { Text, View, Pressable } from 'react-native';
 import * as Battery from 'expo-battery';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 
-export const EditScreenInfo = () => {
+export const Home = () => {
+  const [isSetupComplete, setIsSetupComplete] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
 
-  const [isCharging, setIsCharging] = useState<boolean>(false)
+  const [permission, requestPermission] = useCameraPermissions();
+
+  const scannedRef = useRef(false);
 
   const battery = Battery.usePowerState();
 
   useEffect(() => {
-    const isPluggedIn = battery.batteryState === Battery.BatteryState.CHARGING;
+    const checkSetup = async () => {
+      try {
+        const scanned = await AsyncStorage.getItem('scanned');
 
-    if (isPluggedIn) {
-      setIsCharging(true)
+        if (scanned === 'true') {
+          setIsSetupComplete(true);
+        }
+      } catch (error) {
+        console.log('Storage error:', error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkSetup();
+  }, []);
+
+  const handleBarcodeScanned = async () => {
+    if (scannedRef.current) return;
+
+    scannedRef.current = true;
+
+    try {
+      await AsyncStorage.setItem('scanned', 'true');
+      setIsSetupComplete(true);
+    } catch (error) {
+      scannedRef.current = false;
+      console.log('Failed to save scan:', error);
     }
-  }, [])
+  };
+
+  if (isChecking) {
+    return <View className="flex-1 bg-[#05070a]" />;
+  }
+
+  if (!isSetupComplete) {
+    if (!permission?.granted) {
+      return (
+        <View className="flex-1 items-center justify-center bg-[#05070a] px-8">
+          <Text className="mb-4 text-xl font-bold text-white">
+            Camera Permission
+          </Text>
+
+          <Text className="mb-6 text-center text-sm text-[#8293a8]">
+            Allow camera access to scan your desktop QR code.
+          </Text>
+
+          <Pressable
+            onPress={requestPermission}
+            className="rounded-2xl bg-[#25bdf4] px-8 py-4"
+          >
+            <Text className="font-bold text-[#05070a]">
+              Allow Camera
+            </Text>
+          </Pressable>
+        </View>
+      );
+    }
+
+    return (
+      <View className="flex-1 bg-[#05070a]">
+
+        <CameraView
+          style={{ flex: 1 }}
+          facing="back"
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr'],
+          }}
+          onBarcodeScanned={handleBarcodeScanned}
+        />
+
+        {/* Scanner overlay */}
+        <View className="absolute inset-0 items-center justify-center">
+
+          <Text className="mb-3 text-2xl font-bold text-white">
+            ChargeSync
+          </Text>
+
+          <Text className="mb-10 text-sm text-[#dce5f1]">
+            Scan your desktop QR code
+          </Text>
+
+          <View className="h-[250px] w-[250px] rounded-3xl border-[3px] border-[#25bdf4]" />
+
+          <Text className="mt-8 text-sm text-white">
+            Position the QR code inside the frame
+          </Text>
+
+        </View>
+
+      </View>
+    );
+  }
+
+  // AFTER SCANNING: EXISTING CHARGESYNC UI
+
+  const isCharging =
+    battery.batteryState === Battery.BatteryState.CHARGING;
 
   return (
     <View className="flex-1 bg-[#05070a] px-6 pt-7 pb-6">
@@ -80,7 +178,7 @@ export const EditScreenInfo = () => {
           />
 
           <View
-            className="h-[174px] w-[112px]  items-center justify-center rounded-[25px] border-2 border-[#159acb] bg-[#101820]"
+            className="h-[174px] w-[112px] items-center justify-center rounded-[25px] border-2 border-[#159acb] bg-[#101820]"
             style={{
               shadowColor: '#28b4e9',
               shadowOpacity: 0.55,
@@ -89,14 +187,12 @@ export const EditScreenInfo = () => {
               elevation: 15,
             }}
           >
-
             <View className="absolute -top-[2px] h-[3px] w-9 rounded-full bg-[#25bdf4]" />
 
             <View className="absolute bottom-[6px] left-[6px] right-[6px] h-[84%] overflow-hidden rounded-[17px] bg-[#28b4e9]">
               <View className="absolute inset-0 bg-white/10" />
               <View className="absolute left-0 top-0 h-full w-2 bg-white/10" />
             </View>
-
           </View>
         </View>
 
@@ -107,7 +203,9 @@ export const EditScreenInfo = () => {
 
           <View className="mt-1 flex-row items-start">
             <Text className="text-[56px] font-semibold leading-[64px] text-[#f0f3f8]">
-              {Math.round(battery.batteryLevel * 100)}
+              {battery.batteryLevel != null
+                ? Math.round(battery.batteryLevel * 100)
+                : '--'}
             </Text>
 
             <Text className="mt-3 text-2xl font-medium text-[#28b4e9]">
@@ -119,7 +217,7 @@ export const EditScreenInfo = () => {
             <View className="h-1.5 w-1.5 rounded-full bg-[#28b4e9]" />
 
             <Text className="text-xs font-medium text-[#d5deeb]">
-              {isCharging ? "Charging" : "Discharging"}
+              {isCharging ? 'Charging' : 'Discharging'}
             </Text>
           </View>
         </View>
@@ -164,7 +262,6 @@ export const EditScreenInfo = () => {
             Disconnect desktop
           </Text>
         </View>
-
 
       </View>
     </View>
