@@ -1,36 +1,79 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    const qrContainer = document.getElementById("qrcode");
-      const dashboard = document.getElementById("dashboard");
+  const qrContainer = document.getElementById("qrcode");
+
+  const pairScreen = document.getElementById("pairScreen");
+  const dashboard = document.getElementById("dashboard");
   const nextButton = document.getElementById("nextButton");
 
+  const percentageText = document.querySelector(".percentage h1");
+  const batteryFill = document.querySelector(".battery-fill");
+  const chargingStatus = document.querySelector(".charging-status");
 
-    try {
+  window.desktop.onBatteryUpdate((battery) => {
 
-      const uniqueId = await window.desktop.createWidget();
+    console.log("Phone battery:", battery);
 
-      console.log(uniqueId);
+    percentageText.textContent = battery;
 
-      new QRCode(qrContainer, {
-        text: uniqueId,
-        width: 164,
-        height: 164,
-        colorDark: "#071421",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
+    batteryFill.style.height = `${battery}%`;
 
-    } catch (error) {
-      console.error("Widget creation failed:", error);
+    if (battery <= 20) {
+
+      batteryFill.style.background =
+        "linear-gradient(180deg, #ff8585, #ff3030 60%, #c90000)";
+
+      batteryFill.style.boxShadow =
+        "0 0 20px rgba(255, 40, 40, 0.5)";
+
+    } else {
+
+      batteryFill.style.background =
+        "linear-gradient(180deg, #9beaff, #45c5f5 48%, #168bd4)";
+
+      batteryFill.style.boxShadow =
+        "0 0 20px rgba(52,190,255,0.38)";
     }
 
-    nextButton.addEventListener("click", () => {
+  });
 
-      pairScreen.classList.add("hidden");
+
+  try {
+
+    const uniqueId = await window.desktop.createWidget();
+
+    console.log("Widget ID:", uniqueId);
+
+    new QRCode(qrContainer, {
+      text: uniqueId,
+      width: 160,
+      height: 160,
+      colorDark: "#071421",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+  } catch (error) {
+
+    console.error("Widget creation failed:", error);
+
+    qrContainer.textContent = "Unable to generate QR";
+
+  }
+
+
+  nextButton.addEventListener("click", () => {
+
+    pairScreen.classList.add("hidden");
+
+    setTimeout(() => {
 
       pairScreen.style.display = "none";
       dashboard.classList.remove("hidden");
 
-    });
+    }, 250);
+
+  });
+
 });

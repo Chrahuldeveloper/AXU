@@ -5,6 +5,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
 const path = require('path');
+const fs = require("fs")
 
 const supabaseUrl = 'https://wgtfvyuibnmzqzlltguq.supabase.co';
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
@@ -13,6 +14,35 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let widget;
 let batteryInterval;
+
+const widgetIdPath = path.join(
+  app.getPath('userData'),
+  'widget.json'
+);
+
+
+function getWidgetId(){
+  if(fs.existsSync(widgetIdPath)){
+    const saved = JSON.parse(
+      fs.readFileSync(widgetIdPath, 'utf8')
+    );
+
+    return saved.widgetId;
+
+  }
+
+  return null
+}
+
+
+function saveWidgetId(id){
+  fs.writeFileSync(
+    widgetIdPath,
+    JSON.stringify({ id })
+  )
+
+}
+
 
 function createWidget() {
   widget = new BrowserWindow({
@@ -64,20 +94,27 @@ async function fetchbattery(widgetId) {
 }
 
 ipcMain.handle('create-widget', async () => {
-  const uniqueId = crypto.randomUUID();
+  let uniqueId = getWidgetId();
+  
+  if(!uniqueId){
+    
+    uniqueId = crypto.randomUUID();
+    const { error } = await supabase
+      .from('info')
+      .insert({
+        'widget-id': uniqueId
+      });
+  
+    if (error) {
+      console.error('Supabase insert error:', error);
+      throw new Error(error.message);
+    }
+  
+    console.log('Widget created:', uniqueId);
 
-  const { error } = await supabase
-    .from('info')
-    .insert({
-      'widget-id': uniqueId
-    });
+    saveWidgetId(uniqueId);
 
-  if (error) {
-    console.error('Supabase insert error:', error);
-    throw new Error(error.message);
   }
-
-  console.log('Widget created:', uniqueId);
 
   await fetchbattery(uniqueId);
 
@@ -85,7 +122,7 @@ ipcMain.handle('create-widget', async () => {
 
   batteryInterval = setInterval(() => {
     fetchbattery(uniqueId);
-  }, 2000);
+  }, 10000);
 
   return uniqueId;
 });
