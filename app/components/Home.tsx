@@ -17,7 +17,7 @@ const BACKGROUND_TASK_NAME = 'SAVE_BATTERY_INFO';
 
 TaskManager.defineTask(BACKGROUND_TASK_NAME, async () => {
   try {
-    const widgetId = AsyncStorage.getItem("widget-id")
+    const widgetId = await AsyncStorage.getItem("widget-id")
 
     if (!widgetId) {
       console.log('No widget ID found');
@@ -71,10 +71,14 @@ TaskManager.defineTask(BACKGROUND_TASK_NAME, async () => {
 });
 
 async function registerBackgroundTaskAsync() {
-  console.log('Background task registered!');
-  return BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
-    minimumInterval: 15
-  });
+
+  const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_NAME)
+  if(!isRegistered){
+    console.log('Background task registered!');
+    return BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
+      minimumInterval: 15
+    });
+  }
 
 }
 

@@ -30,7 +30,6 @@ function getWidgetId(){
     return saved.widgetId;
 
   }
-
   return null
 }
 
