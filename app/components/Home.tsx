@@ -10,10 +10,16 @@ export const Home = () => {
   const [isChecking, setIsChecking] = useState(true);
 
   const [permission, requestPermission] = useCameraPermissions();
-
   const scannedRef = useRef(false);
 
   const battery = Battery.usePowerState();
+
+  const isLowBattery =
+    battery.batteryLevel != null &&
+    battery.batteryLevel * 100 < 20;
+
+  const neonColor = isLowBattery ? '#ff3030' : '#28b4e9';
+  const borderColor = isLowBattery ? '#ff3030' : '#159acb';
 
   useEffect(() => {
     const checkSetup = async () => {
@@ -33,13 +39,12 @@ export const Home = () => {
     checkSetup();
   }, []);
 
-  const handleBarcodeScanned = async ({  data }:any) => {
+  const handleBarcodeScanned = async ({ data }: any) => {
     if (scannedRef.current) return;
 
     scannedRef.current = true;
 
     console.log('QR Content:', data);
-
 
     try {
       await AsyncStorage.setItem('scanned', 'true');
@@ -68,7 +73,8 @@ export const Home = () => {
 
           <Pressable
             onPress={requestPermission}
-            className="rounded-2xl bg-[#25bdf4] px-8 py-4"
+            className="rounded-2xl px-8 py-4"
+            style={{ backgroundColor: neonColor }}
           >
             <Text className="font-bold text-[#05070a]">
               Allow Camera
@@ -80,7 +86,6 @@ export const Home = () => {
 
     return (
       <View className="flex-1 bg-[#05070a]">
-
         <CameraView
           style={{ flex: 1 }}
           facing="back"
@@ -91,7 +96,6 @@ export const Home = () => {
         />
 
         <View className="absolute inset-0 items-center justify-center">
-
           <Text className="mb-3 text-2xl font-bold text-white">
             ChargeSync
           </Text>
@@ -100,14 +104,15 @@ export const Home = () => {
             Scan your desktop QR code
           </Text>
 
-          <View className="h-[250px] w-[250px] rounded-3xl border-[3px] border-[#25bdf4]" />
+          <View
+            className="h-[250px] w-[250px] rounded-3xl border-[3px]"
+            style={{ borderColor: neonColor }}
+          />
 
           <Text className="mt-8 text-sm text-white">
             Position the QR code inside the frame
           </Text>
-
         </View>
-
       </View>
     );
   }
@@ -121,7 +126,9 @@ export const Home = () => {
       <View className="flex-row items-center justify-between border-b border-[#1c222b] pb-5">
         <View className="flex-row items-center gap-3">
           <View className="h-9 w-9 items-center justify-center rounded-full bg-[#101e28]">
-            <Text className="text-xl text-[#25bdf4]">▣</Text>
+            <Text className="text-xl" style={{ color: neonColor }}>
+              ▣
+            </Text>
           </View>
 
           <Text className="text-base font-bold text-white">
@@ -144,9 +151,9 @@ export const Home = () => {
           <View
             className="absolute h-[280px] w-[280px] rounded-full"
             style={{
-              backgroundColor: '#159acb',
+              backgroundColor: neonColor,
               opacity: 0.10,
-              shadowColor: '#28b4e9',
+              shadowColor: neonColor,
               shadowOpacity: 1,
               shadowRadius: 100,
               shadowOffset: { width: 0, height: 0 },
@@ -156,9 +163,9 @@ export const Home = () => {
           <View
             className="absolute h-[210px] w-[210px] rounded-full"
             style={{
-              backgroundColor: '#159acb',
+              backgroundColor: neonColor,
               opacity: 0.12,
-              shadowColor: '#28b4e9',
+              shadowColor: neonColor,
               shadowOpacity: 1,
               shadowRadius: 65,
               shadowOffset: { width: 0, height: 0 },
@@ -168,9 +175,9 @@ export const Home = () => {
           <View
             className="absolute h-[150px] w-[150px] rounded-full"
             style={{
-              backgroundColor: '#28b4e9',
+              backgroundColor: neonColor,
               opacity: 0.12,
-              shadowColor: '#28b4e9',
+              shadowColor: neonColor,
               shadowOpacity: 1,
               shadowRadius: 40,
               shadowOffset: { width: 0, height: 0 },
@@ -178,18 +185,25 @@ export const Home = () => {
           />
 
           <View
-            className="h-[174px] w-[112px] items-center justify-center rounded-[25px] border-2 border-[#159acb] bg-[#101820]"
+            className="h-[174px] w-[112px] items-center justify-center rounded-[25px] border-2 bg-[#101820]"
             style={{
-              shadowColor: '#28b4e9',
-              shadowOpacity: 0.55,
-              shadowRadius: 22,
+              borderColor,
+              shadowColor: neonColor,
+              shadowOpacity: 0.75,
+              shadowRadius: 25,
               shadowOffset: { width: 0, height: 0 },
               elevation: 15,
             }}
           >
-            <View className="absolute -top-[2px] h-[3px] w-9 rounded-full bg-[#25bdf4]" />
+            <View
+              className="absolute -top-[2px] h-[3px] w-9 rounded-full"
+              style={{ backgroundColor: neonColor }}
+            />
 
-            <View className="absolute bottom-[6px] left-[6px] right-[6px] h-[84%] overflow-hidden rounded-[17px] bg-[#28b4e9]">
+            <View
+              className="absolute bottom-[6px] left-[6px] right-[6px] h-[84%] overflow-hidden rounded-[17px]"
+              style={{ backgroundColor: neonColor }}
+            >
               <View className="absolute inset-0 bg-white/10" />
               <View className="absolute left-0 top-0 h-full w-2 bg-white/10" />
             </View>
@@ -208,13 +222,19 @@ export const Home = () => {
                 : '--'}
             </Text>
 
-            <Text className="mt-3 text-2xl font-medium text-[#28b4e9]">
+            <Text
+              className="mt-3 text-2xl font-medium"
+              style={{ color: neonColor }}
+            >
               %
             </Text>
           </View>
 
           <View className="mt-3 flex-row items-center gap-2 rounded-full border border-[#202832] bg-[#0b1016] px-4 py-2">
-            <View className="h-1.5 w-1.5 rounded-full bg-[#28b4e9]" />
+            <View
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: neonColor }}
+            />
 
             <Text className="text-xs font-medium text-[#d5deeb]">
               {isCharging ? 'Charging' : 'Discharging'}
