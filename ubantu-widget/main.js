@@ -11,28 +11,11 @@ const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-ipcMain.handle('create-widget', async () => {
-
-  const uniqueId = crypto.randomUUID();
-
-  const { error } = await supabase
-    .from('info')
-    .insert({
-      'widget-id': uniqueId
-    });
-
-  if (error) {
-    console.error('Supabase insert error:', error);
-    throw new Error(error.message);
-  }
-
-  console.log('Widget created:', uniqueId);
-
-  return uniqueId;
-});
+let widget;
+let batteryInterval;
 
 function createWidget() {
-  const widget = new BrowserWindow({
+  widget = new BrowserWindow({
     width: 300,
     height: 500,
     type: 'utility',
@@ -49,7 +32,63 @@ function createWidget() {
   });
 
   widget.loadFile('index.html');
+
+  widget.on('closed', () => {
+    widget = null;
+    clearInterval(batteryInterval);
+  });
 }
+
+async function fetchbattery(widgetId) {
+  if (!widget || widget.isDestroyed()) return;
+
+  const { data, error } = await supabase
+    .from('info')
+    .select('battery')
+    .eq('widget-id', widgetId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Battery fetch error:', error.message);
+    return;
+  }
+
+  if (data && data.battery !== null) {
+    console.log('Battery:', data.battery);
+
+    widget.webContents.send(
+      'battery-update',
+      data.battery
+    );
+  }
+}
+
+ipcMain.handle('create-widget', async () => {
+  const uniqueId = crypto.randomUUID();
+
+  const { error } = await supabase
+    .from('info')
+    .insert({
+      'widget-id': uniqueId
+    });
+
+  if (error) {
+    console.error('Supabase insert error:', error);
+    throw new Error(error.message);
+  }
+
+  console.log('Widget created:', uniqueId);
+
+  await fetchbattery(uniqueId);
+
+  clearInterval(batteryInterval);
+
+  batteryInterval = setInterval(() => {
+    fetchbattery(uniqueId);
+  }, 2000);
+
+  return uniqueId;
+});
 
 app.whenReady().then(() => {
   setTimeout(createWidget, 100);

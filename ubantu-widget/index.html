@@ -2,640 +2,656 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ChargeSync</title>
-
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  background: transparent;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #f5faff;
-  overflow: hidden;
-}
-
-.widget-container {
-  width: 100%;
-  height: 100vh;
-  min-height: 420px;
-  padding: 23px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-
-  background: rgba(20, 29, 42, 0.68);
-  backdrop-filter: blur(35px) saturate(160%);
-  -webkit-backdrop-filter: blur(35px) saturate(160%);
-
-  border: 1px solid rgba(255,255,255,0.13);
-  border-radius: 28px;
-
-  box-shadow:
-    0 12px 45px rgba(0,0,0,0.22),
-    inset 0 1px 0 rgba(255,255,255,0.13);
-}
-
-.widget-container::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,0.08),
-    transparent 42%,
-    rgba(50,160,255,0.04)
-  );
-  pointer-events: none;
-}
-
-.drag-region {
-  -webkit-app-region: drag;
-}
-
-.no-drag, button {
-  -webkit-app-region: no-drag;
-}
-
-/* =========================
-   QR PAIRING SCREEN
-========================= */
-
-.pair-screen {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  padding: 28px;
-  text-align: center;
-
-  background: rgba(20, 29, 42, 0.96);
-  backdrop-filter: blur(35px);
-  -webkit-backdrop-filter: blur(35px);
-
-  border-radius: 28px;
-
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s ease;
-}
-
-.pair-screen.hidden {
-  opacity: 0;
-  transform: scale(0.96);
-  pointer-events: none;
-}
-
-.pair-icon {
-  width: 46px;
-  height: 46px;
-  display: grid;
-  place-items: center;
-  border-radius: 15px;
-
-  background: rgba(51,174,238,0.15);
-  border: 1px solid rgba(91,202,255,0.2);
-
-  color: #8de3ff;
-  font-size: 25px;
-
-  margin-bottom: 25px;
-}
-
-.pair-title {
-  font-size: 21px;
-  font-weight: 650;
-  letter-spacing: -0.7px;
-}
-
-.pair-description {
-  max-width: 240px;
-  color: rgba(220,235,250,0.55);
-  font-size: 11px;
-  line-height: 1.7;
-  margin-top: 10px;
-}
-
-.qr-frame {
-  width: 190px;
-  height: 190px;
-  margin: 27px 0 22px;
-  padding: 13px;
-
-  border-radius: 23px;
-  background: white;
-
-  box-shadow:
-    0 0 35px rgba(48,180,255,0.18),
-    0 0 80px rgba(48,180,255,0.08);
-}
-
-#qrcode {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#qrcode img,
-#qrcode canvas {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain;
-}
-
-.pair-instruction {
-  color: #9bdcff;
-  font-size: 11px;
-  font-weight: 550;
-}
-
-.pair-hint {
-  color: rgba(220,235,250,0.38);
-  font-size: 9px;
-  margin-top: 8px;
-}
-
-.pair-button {
-  margin-top: 24px;
-  padding: 10px 20px;
-
-  border: 1px solid rgba(91,202,255,0.2);
-  border-radius: 20px;
-
-  color: #b9eaff;
-  background: rgba(49,166,230,0.12);
-
-  font-size: 10px;
-  cursor: pointer;
-  -webkit-app-region: no-drag;
-
-  transition: background 0.2s ease;
-}
-
-.pair-button:hover {
-  background: rgba(49,166,230,0.22);
-}
-
-/* =========================
-   MAIN DASHBOARD
-========================= */
-
-.dashboard {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 1;
-}
-
-.dashboard.hidden {
-  display: none;
-}
-
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  z-index: 2;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.brand-logo {
-  width: 35px;
-  height: 35px;
-  border-radius: 12px;
-
-  display: grid;
-  place-items: center;
-
-  color: #8de3ff;
-  font-size: 21px;
-
-  background: rgba(51,174,238,0.15);
-  border: 1px solid rgba(91,202,255,0.18);
-}
-
-.brand-name {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
-}
-
-.brand-name span {
-  color: #65cefa;
-}
-
-.version {
-  font-size: 9px;
-  color: rgba(220,235,250,0.45);
-  letter-spacing: 1.1px;
-  margin-top: 3px;
-}
-
-.live {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  padding: 6px 10px;
-  border-radius: 20px;
-
-  font-size: 9px;
-  color: #9ce9ca;
-
-  background: rgba(69,211,157,0.09);
-  border: 1px solid rgba(69,211,157,0.12);
-}
-
-.live span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #55dfa9;
-  box-shadow: 0 0 8px #55dfa9;
-}
-
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 1;
-}
-
-.device-label {
-  color: rgba(220,235,250,0.52);
-  font-size: 10px;
-  letter-spacing: 1.7px;
-  margin-bottom: 25px;
-}
-
-.battery-wrapper {
-  width: 150px;
-  height: 170px;
-  display: grid;
-  place-items: center;
-  position: relative;
-}
-
-.battery-glow {
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-
-  background: rgba(42,179,255,0.16);
-  filter: blur(48px);
-
-  animation: breathe 4s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0%, 100% {
-    opacity: 0.65;
-    transform: scale(0.9);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scale(1.12);
-  }
-}
-
-.battery {
-  position: relative;
-  width: 82px;
-  height: 137px;
-  padding: 5px;
-
-  border-radius: 19px;
-  border: 2px solid rgba(125,210,255,0.65);
-
-  background: rgba(10,35,53,0.42);
-
-  box-shadow:
-    0 0 25px rgba(43,180,255,0.18),
-    inset 0 0 15px rgba(43,180,255,0.08);
-}
-
-.battery-cap {
-  position: absolute;
-  width: 29px;
-  height: 5px;
-  top: -7px;
-  left: 24px;
-
-  border-radius: 5px 5px 0 0;
-  background: #65d6ff;
-  box-shadow: 0 0 9px rgba(65,195,255,0.7);
-}
-
-.battery-fill {
-  position: absolute;
-  bottom: 5px;
-  left: 5px;
-  right: 5px;
-  height: 76%;
-
-  border-radius: 12px;
-
-  background: linear-gradient(
-    180deg,
-    #9beaff,
-    #45c5f5 48%,
-    #168bd4
-  );
-
-  box-shadow: 0 0 20px rgba(52,190,255,0.38);
-}
-
-.battery-fill::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-
-  background: linear-gradient(
-    110deg,
-    rgba(255,255,255,0.18),
-    transparent 45%
-  );
-}
-
-.percentage {
-  display: flex;
-  align-items: flex-start;
-  gap: 2px;
-  margin-top: 13px;
-}
-
-.percentage h1 {
-  font-size: 59px;
-  line-height: 1;
-  font-weight: 650;
-  letter-spacing: -4px;
-}
-
-.percentage span {
-  color: #72d6ff;
-  font-size: 21px;
-  margin-top: 6px;
-}
-
-.battery-caption {
-  color: rgba(220,235,250,0.52);
-  font-size: 11px;
-  margin-top: 7px;
-}
-
-.charging-status {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-
-  margin-top: 17px;
-  padding: 8px 13px;
-
-  border-radius: 20px;
-  color: #a9dfff;
-  font-size: 10px;
-
-  background: rgba(49,166,230,0.10);
-  border: 1px solid rgba(90,190,255,0.12);
-}
-
-.charging-status .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #5acbff;
-  box-shadow: 0 0 7px #5acbff;
-}
-
-footer {
-  position: relative;
-  z-index: 2;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255,255,255,0.09);
-}
-
-.device-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.device-icon {
-  width: 37px;
-  height: 37px;
-
-  display: grid;
-  place-items: center;
-
-  border-radius: 12px;
-  color: #8bdcff;
-  font-size: 17px;
-
-  background: rgba(80,170,225,0.12);
-  border: 1px solid rgba(255,255,255,0.07);
-}
-
-.device-details strong {
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.device-details p {
-  color: rgba(220,235,250,0.43);
-  font-size: 9px;
-  margin-top: 4px;
-}
-
-.connection {
-  margin-left: auto;
-
-  display: flex;
-  align-items: center;
-  gap: 5px;
-
-  color: #8ee4bd;
-  font-size: 9px;
-}
-
-.connection span {
-  font-size: 10px;
-}
-
-.last-sync {
-  display: flex;
-  justify-content: space-between;
-
-  margin-top: 14px;
-  padding-top: 12px;
-
-  border-top: 1px solid rgba(255,255,255,0.07);
-
-  color: rgba(220,235,250,0.42);
-  font-size: 9px;
-}
-
-.last-sync strong {
-  color: rgba(235,245,255,0.75);
-  font-weight: 500;
-}
-
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChargeSync</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      color: #f5faff;
+      background: transparent;
+    }
+
+    .widget-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 420px;
+      padding: 22px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      background: rgba(18, 27, 42, 0.72);
+      backdrop-filter: blur(45px) saturate(180%);
+      -webkit-backdrop-filter: blur(45px) saturate(180%);
+
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 30px;
+
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.3),
+        inset 0 1px 1px rgba(255,255,255,0.2);
+    }
+
+    .widget-container::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(92,190,255,0.15), transparent 38%),
+        radial-gradient(circle at 100% 100%, rgba(115,95,255,0.12), transparent 38%),
+        linear-gradient(145deg, rgba(255,255,255,0.07), transparent 45%);
+    }
+
+    .drag-region {
+      -webkit-app-region: drag;
+    }
+
+    .no-drag,
+    button {
+      -webkit-app-region: no-drag;
+    }
+
+    /* PAIRING SCREEN */
+
+    .pair-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      padding: 26px;
+      text-align: center;
+
+      background: rgba(17, 27, 43, 0.72);
+      backdrop-filter: blur(45px) saturate(180%);
+      -webkit-backdrop-filter: blur(45px) saturate(180%);
+
+      border-radius: 30px;
+
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    .pair-screen.hidden {
+      opacity: 0;
+      transform: scale(0.94);
+      pointer-events: none;
+    }
+
+    .pair-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+
+      border-radius: 18px;
+      font-size: 27px;
+      color: #a5e5ff;
+
+      background: linear-gradient(
+        145deg,
+        rgba(100,200,255,0.24),
+        rgba(100,150,255,0.08)
+      );
+
+      border: 1px solid rgba(150,220,255,0.25);
+
+      box-shadow:
+        0 0 35px rgba(50,170,255,0.16),
+        inset 0 1px 1px rgba(255,255,255,0.25);
+
+      margin-bottom: 22px;
+    }
+
+    .pair-title {
+      font-size: 22px;
+      font-weight: 650;
+      letter-spacing: -0.8px;
+    }
+
+    .pair-description {
+      max-width: 235px;
+      color: rgba(220,235,250,0.62);
+      font-size: 11px;
+      line-height: 1.7;
+      margin-top: 10px;
+    }
+
+    .qr-frame {
+      width: 184px;
+      height: 184px;
+      margin: 25px 0 18px;
+      padding: 12px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 25px;
+      background: rgba(255,255,255,0.96);
+
+      box-shadow:
+        0 0 35px rgba(48,180,255,0.22),
+        0 0 85px rgba(48,180,255,0.10),
+        inset 0 1px 3px rgba(255,255,255,0.8);
+    }
+
+    #qrcode {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #qrcode img,
+    #qrcode canvas {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain;
+    }
+
+    .pair-instruction {
+      color: #a7e4ff;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .pair-hint {
+      color: rgba(220,235,250,0.42);
+      font-size: 9px;
+      margin-top: 7px;
+    }
+
+    /* LIQUID GLASS BUTTON */
+
+    .pair-button {
+      width: 170px;
+      margin-top: 25px;
+      padding: 12px 20px;
+
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.28);
+
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(110,205,255,0.34),
+          rgba(65,130,255,0.18)
+        );
+
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+
+      box-shadow:
+        0 8px 25px rgba(30,140,255,0.18),
+        inset 0 1px 1px rgba(255,255,255,0.35);
+
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .pair-button:hover {
+      transform: translateY(-2px);
+      background:
+        linear-gradient(
+          135deg,
+          rgba(110,205,255,0.48),
+          rgba(65,130,255,0.28)
+        );
+
+      box-shadow:
+        0 10px 35px rgba(30,140,255,0.28),
+        inset 0 1px 1px rgba(255,255,255,0.45);
+    }
+
+    .pair-button:active {
+      transform: scale(0.96);
+    }
+
+    /* DASHBOARD */
+
+    .dashboard {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+
+      animation: appear 0.5s ease;
+    }
+
+    .dashboard.hidden {
+      display: none;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+
+      color: #a5e5ff;
+      font-size: 21px;
+
+      background: rgba(80,180,255,0.15);
+      border: 1px solid rgba(150,220,255,0.2);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .brand-name {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .brand-name span {
+      color: #70d3ff;
+    }
+
+    .version {
+      font-size: 9px;
+      color: rgba(220,235,250,0.45);
+      letter-spacing: 1px;
+      margin-top: 3px;
+    }
+
+    .live {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 20px;
+
+      font-size: 9px;
+      color: #9ce9ca;
+
+      background: rgba(69,211,157,0.09);
+      border: 1px solid rgba(69,211,157,0.14);
+    }
+
+    .live span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #55dfa9;
+      box-shadow: 0 0 8px #55dfa9;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .device-label {
+      color: rgba(220,235,250,0.52);
+      font-size: 10px;
+      letter-spacing: 1.7px;
+      margin-bottom: 25px;
+    }
+
+    .battery-wrapper {
+      width: 150px;
+      height: 170px;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .battery-glow {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(42,179,255,0.18);
+      filter: blur(48px);
+      animation: breathe 4s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% {
+        opacity: 0.65;
+        transform: scale(0.9);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.12);
+      }
+    }
+
+    .battery {
+      position: relative;
+      width: 82px;
+      height: 137px;
+      padding: 5px;
+      border-radius: 19px;
+
+      border: 2px solid rgba(125,210,255,0.65);
+      background: rgba(10,35,53,0.42);
+
+      box-shadow:
+        0 0 25px rgba(43,180,255,0.18),
+        inset 0 0 15px rgba(43,180,255,0.08);
+    }
+
+    .battery-cap {
+      position: absolute;
+      width: 29px;
+      height: 5px;
+      top: -7px;
+      left: 24px;
+      border-radius: 5px 5px 0 0;
+      background: #65d6ff;
+      box-shadow: 0 0 9px rgba(65,195,255,0.7);
+    }
+
+    .battery-fill {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      right: 5px;
+      height: 76%;
+      border-radius: 12px;
+
+      background: linear-gradient(
+        180deg,
+        #9beaff,
+        #45c5f5 48%,
+        #168bd4
+      );
+
+      box-shadow: 0 0 20px rgba(52,190,255,0.38);
+    }
+
+    .percentage {
+      display: flex;
+      align-items: flex-start;
+      gap: 2px;
+      margin-top: 13px;
+    }
+
+    .percentage h1 {
+      font-size: 59px;
+      line-height: 1;
+      font-weight: 650;
+      letter-spacing: -4px;
+    }
+
+    .percentage span {
+      color: #72d6ff;
+      font-size: 21px;
+      margin-top: 6px;
+    }
+
+    .battery-caption {
+      color: rgba(220,235,250,0.52);
+      font-size: 11px;
+      margin-top: 7px;
+    }
+
+    .charging-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 17px;
+      padding: 8px 13px;
+      border-radius: 20px;
+
+      color: #a9dfff;
+      font-size: 10px;
+
+      background: rgba(49,166,230,0.10);
+      border: 1px solid rgba(90,190,255,0.15);
+    }
+
+    .charging-status .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #5acbff;
+      box-shadow: 0 0 7px #5acbff;
+    }
+
+    footer {
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.09);
+    }
+
+    .device-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .device-icon {
+      width: 37px;
+      height: 37px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+
+      color: #8bdcff;
+      font-size: 17px;
+
+      background: rgba(80,170,225,0.12);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .device-details strong {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .device-details p {
+      color: rgba(220,235,250,0.43);
+      font-size: 9px;
+      margin-top: 4px;
+    }
+
+    .connection {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #8ee4bd;
+      font-size: 9px;
+    }
+
+    .last-sync {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      color: rgba(220,235,250,0.42);
+      font-size: 9px;
+    }
+
+    .last-sync strong {
+      color: rgba(235,245,255,0.75);
+      font-weight: 500;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="widget-container drag-region">
+  <div class="widget-container drag-region">
 
-  <!-- QR PAIRING SCREEN -->
+    <div class="pair-screen" id="pairScreen">
 
-  <div class="pair-screen" id="pairScreen">
+      <div class="pair-icon">ϟ</div>
 
-    <div class="pair-icon">ϟ</div>
+      <div class="pair-title">Connect your phone</div>
 
-    <div class="pair-title">Connect your phone</div>
-
-    <p class="pair-description">
-      Scan this QR code with your ChargeSync mobile app
-      to connect your phone to this desktop.
-    </p>
-
-    <div class="qr-frame">
-      <div id="qrcode"></div>
-    </div>
-
-    <div class="pair-instruction">
-      Scan to pair your device
-    </div>
-
-    <div class="pair-hint">
-      Keep your phone nearby while connecting
-    </div>
-
-  </div>
-
-
-
-  <div class="dashboard hidden" id="dashboard">
-
-    <header>
-
-      <div class="brand">
-        <div class="brand-logo">ϟ</div>
-
-        <div>
-          <div class="brand-name">
-            Charge<span>Sync</span>
-          </div>
-
-          <div class="version">
-            DESKTOP COMPANION
-          </div>
-        </div>
-      </div>
-
-      <div class="live">
-        <span></span>
-        LIVE
-      </div>
-
-    </header>
-
-
-    <section class="main-content no-drag">
-
-      <div class="device-label">
-        PHONE BATTERY
-      </div>
-
-      <div class="battery-wrapper">
-
-        <div class="battery-glow"></div>
-
-        <div class="battery">
-
-          <div class="battery-cap"></div>
-
-          <div class="battery-fill"></div>
-
-        </div>
-
-      </div>
-
-      <div class="percentage">
-        <h1>84</h1>
-        <span>%</span>
-      </div>
-
-      <p class="battery-caption">
-        Your device is looking healthy
+      <p class="pair-description">
+        Scan this QR code with your ChargeSync mobile app
+        to connect your phone to this desktop.
       </p>
 
-      <div class="charging-status">
-        <span class="dot"></span>
-        Discharging
+      <div class="qr-frame">
+        <div id="qrcode"></div>
       </div>
 
-    </section>
+      <div class="pair-instruction">
+        Scan to pair your device
+      </div>
+
+      <div class="pair-hint">
+        Keep your phone nearby while connecting
+      </div>
+
+      <button class="pair-button" id="nextButton">
+        Next <span>→</span>
+      </button>
+
+    </div>
 
 
-    <footer class="no-drag">
+    <div class="dashboard hidden" id="dashboard">
 
-      <div class="device-info">
+      <header>
 
-        <div class="device-icon">⌘</div>
+        <div class="brand">
 
-        <div class="device-details">
-          <strong>Ubuntu Desktop</strong>
-          <p>Desktop companion</p>
+          <div class="brand-logo">ϟ</div>
+
+          <div>
+            <div class="brand-name">
+              Charge<span>Sync</span>
+            </div>
+
+            <div class="version">
+              DESKTOP COMPANION
+            </div>
+          </div>
+
         </div>
 
-        <div class="connection">
-          <span>●</span>
-          Connected
+        <div class="live">
+          <span></span>
+          LIVE
         </div>
 
-      </div>
+      </header>
 
-      <div class="last-sync">
-        <span>LAST SYNC</span>
-        <strong>Just now</strong>
-      </div>
 
-    </footer>
+      <section class="main-content no-drag">
+
+        <div class="device-label">
+          PHONE BATTERY
+        </div>
+
+        <div class="battery-wrapper">
+
+          <div class="battery-glow"></div>
+
+          <div class="battery">
+
+            <div class="battery-cap"></div>
+
+            <div class="battery-fill"></div>
+
+          </div>
+
+        </div>
+
+        <div class="percentage">
+          <h1>84</h1>
+          <span>%</span>
+        </div>
+
+        <p class="battery-caption">
+          Your device is looking healthy
+        </p>
+
+        <div class="charging-status">
+          <span class="dot"></span>
+          Discharging
+        </div>
+
+      </section>
+
+
+      <footer class="no-drag">
+
+        <div class="device-info">
+
+          <div class="device-icon">⌘</div>
+
+          <div class="device-details">
+            <strong>Ubuntu Desktop</strong>
+            <p>Desktop companion</p>
+          </div>
+
+          <div class="connection">
+            <span>●</span>
+            Connected
+          </div>
+
+        </div>
+
+        <div class="last-sync">
+          <span>LAST SYNC</span>
+          <strong>Just now</strong>
+        </div>
+
+      </footer>
+
+    </div>
 
   </div>
 
-</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="./index.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-<script src="./index.js"></script>
 </body>
 </html>

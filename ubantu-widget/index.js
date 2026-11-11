@@ -2,6 +2,9 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
     const qrContainer = document.getElementById("qrcode");
+      const dashboard = document.getElementById("dashboard");
+  const nextButton = document.getElementById("nextButton");
+
 
     try {
 
@@ -22,16 +25,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error("Widget creation failed:", error);
     }
 
-    function showDashboard() {
-
-      const pairScreen = document.getElementById("pairScreen");
-      const dashboard = document.getElementById("dashboard");
+    nextButton.addEventListener("click", () => {
 
       pairScreen.classList.add("hidden");
 
       pairScreen.style.display = "none";
       dashboard.classList.remove("hidden");
 
-    }
-
+    });
 });
