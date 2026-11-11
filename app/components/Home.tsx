@@ -4,8 +4,83 @@ import * as Battery from 'expo-battery';
 import { useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as TaskManager from 'expo-task-manager';
+import * as BackgroundTask from 'expo-background-task';
+import 'expo-sqlite/localStorage/install';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+const BACKGROUND_TASK_NAME = 'SAVE_BATTERY_INFO';
+
+TaskManager.defineTask(BACKGROUND_TASK_NAME, async () => {
+  try {
+    const widgetId = AsyncStorage.getItem("widget-id")
+
+    if (!widgetId) {
+      console.log('No widget ID found');
+      return BackgroundTask.BackgroundTaskResult.Failed;
+
+    }
+
+    const batteryLevel = await Battery.getBatteryLevelAsync();
+
+    if (batteryLevel < 0) {
+      return BackgroundTask.BackgroundTaskResult.Failed;
+    }
+
+    const batteryPercentage = Math.round(batteryLevel * 100);
+
+    const { data: existingRow, error: selectError } = await supabase
+      .from('info')
+      .select('id')
+      .eq('widget-id', widgetId)
+      .maybeSingle();
+
+    if (existingRow) {
+      const { error } = await supabase
+        .from('info')
+        .update({
+          battery: batteryPercentage,
+        })
+        .eq('id', existingRow.id);
+
+      if (error) throw error;
+
+    } else {
+      const { error } = await supabase
+        .from('info')
+        .insert({
+          'widget-id': widgetId,
+          battery: batteryPercentage,
+        });
+
+      if (error) throw error;
+    }
+
+    console.log('Battery saved:', batteryPercentage);
+
+    return BackgroundTask.BackgroundTaskResult.Success;
+
+  } catch (error) {
+    console.error('Failed to execute the background task:', error);
+    return BackgroundTask.BackgroundTaskResult.Failed;
+  }
+});
+
+async function registerBackgroundTaskAsync() {
+  console.log('Background task registered!');
+  return BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
+    minimumInterval: 15
+  });
+
+}
 
 export const Home = () => {
+
+
   const [isSetupComplete, setIsSetupComplete] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
 
@@ -39,6 +114,12 @@ export const Home = () => {
     checkSetup();
   }, []);
 
+  useEffect(() => {
+    registerBackgroundTaskAsync()
+  }, [])
+
+
+
   const handleBarcodeScanned = async ({ data }: any) => {
     if (scannedRef.current) return;
 
@@ -47,7 +128,25 @@ export const Home = () => {
     console.log('QR Content:', data);
 
     try {
+      await AsyncStorage.setItem('widget-id', data);
       await AsyncStorage.setItem('scanned', 'true');
+
+      const currentBattery = Math.round(battery.batteryLevel * 100)
+      
+      const { error } = await supabase
+        .from('info')
+        .upsert(
+          {
+            'widget-id': data,
+            battery: currentBattery,
+          },
+          {
+            onConflict: 'widget-id',
+          }
+        );
+
+      if (error) throw error;
+
       setIsSetupComplete(true);
     } catch (error) {
       scannedRef.current = false;
