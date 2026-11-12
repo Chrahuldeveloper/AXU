@@ -1,6 +1,6 @@
 # AXU
 
-### Your phone and desktop, finally connected.
+### Your phone and desktop, connected.
 
 AXU (Android × Ubuntu) is a cross-device synchronization application that connects your Android smartphone with your Ubuntu Linux desktop.
 
@@ -9,7 +9,7 @@ The goal is simple: bring your phone and computer closer together by allowing th
 From monitoring your phone's battery on your desktop to receiving notifications and call alerts, AXU aims to make the interaction between your devices seamless.
 
 <p align="center">
-  <img src="assets/logo.png" alt="AXU Logo" width="160" />
+  <img src="app/assets/logo.png" alt="AXU Logo" width="160" />
 </p>
 
 <p align="center">
