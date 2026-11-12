@@ -23,7 +23,7 @@ From monitoring your phone's battery on your desktop to receiving notifications 
 
 <p align="center">
   <img src="app/assets/screenshots/pic1.png" width="48%" alt="Ubuntu Desktop Widget" />
-  <img src="screenshots/android-home.png" width="48%" alt="Android Application" />
+  <img src="app/assets/screenshots/pic2.png" width="48%" alt="Android Application" />
 </p>
 
 <p align="center">
