@@ -15,7 +15,6 @@ From monitoring your phone's battery on your desktop to receiving notifications 
 <p align="center">
   <strong>Android × Ubuntu</strong>
   <br/>
-  <em>One ecosystem. Connected devices.</em>
 </p>
 
 ---
@@ -23,7 +22,7 @@ From monitoring your phone's battery on your desktop to receiving notifications 
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/desktop-widget.png" width="48%" alt="Ubuntu Desktop Widget" />
+  <img src="app/assets/screenshots/pic1.png" width="48%" alt="Ubuntu Desktop Widget" />
   <img src="screenshots/android-home.png" width="48%" alt="Android Application" />
 </p>
 
