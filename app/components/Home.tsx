@@ -39,6 +39,10 @@ TaskManager.defineTask(BACKGROUND_TASK_NAME, async () => {
       .eq('widget-id', widgetId)
       .maybeSingle();
 
+    if(selectError){
+      return selectError
+    }  
+
     if (existingRow) {
       const { error } = await supabase
         .from('info')
