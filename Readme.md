@@ -1,15 +1,15 @@
-# ChargeSync
+# AXU
 
 ### Your phone and desktop, finally connected.
 
-ChargeSync is a cross-device synchronization application that connects your Android smartphone with your Ubuntu Linux desktop.
+AXU (Android × Ubuntu) is a cross-device synchronization application that connects your Android smartphone with your Ubuntu Linux desktop.
 
 The goal is simple: bring your phone and computer closer together by allowing them to communicate, share information, and stay synchronized through a single ecosystem.
 
-From monitoring your phone's battery on your desktop to receiving notifications and call alerts, ChargeSync aims to make the interaction between your devices seamless.
+From monitoring your phone's battery on your desktop to receiving notifications and call alerts, AXU aims to make the interaction between your devices seamless.
 
 <p align="center">
-  <img src="assets/logo.png" alt="ChargeSync Logo" width="160" />
+  <img src="assets/logo.png" alt="AXU Logo" width="160" />
 </p>
 
 <p align="center">
@@ -31,7 +31,7 @@ From monitoring your phone's battery on your desktop to receiving notifications 
   <em>Ubuntu Desktop Widget · Android Application</em>
 </p>
 
-> Replace these image paths with your actual screenshots.
+*Replace these image paths with your actual screenshots.*
 
 ---
 
@@ -47,22 +47,22 @@ From monitoring your phone's battery on your desktop to receiving notifications 
 
 ## Architecture
 
-ChargeSync consists of two primary applications:
+AXU consists of two primary applications:
 
 ```text
-             ChargeSync Ecosystem
-                     |
-          +----------+----------+
-          |                     |
-      Android App          Ubuntu Desktop
-          |                     |
-     React Native           Electron
-          |                     |
-     Expo APIs            Desktop Widget
-          |                     |
-          +----------+----------+
-                     |
-               Synchronization
+             AXU Ecosystem
+                   |
+        +----------+----------+
+        |                     |
+    Android App          Ubuntu Desktop
+        |                     |
+   React Native           Electron
+        |                     |
+   Expo APIs            Desktop Widget
+        |                     |
+        +----------+----------+
+                   |
+             Synchronization
 ```
 
 ### Android Application
@@ -96,7 +96,7 @@ Responsible for displaying synchronized device information through a lightweight
 ```bash
 git clone https://github.com/Chrahuldeveloper/AXU.git
 
-cd ChargeSync
+cd AXU
 ```
 
 ### Android Application
@@ -119,20 +119,7 @@ npm install
 npm start
 ```
 
-> Adjust the directory names and commands according to your actual project structure.
-
----
-
-
-## Vision
-
-ChargeSync is being developed with a bigger vision than battery monitoring.
-
-We want to make Android and Linux work together as naturally as devices within a single ecosystem.
-
-Your phone shouldn't feel disconnected from your computer.
-
-**One connection. Multiple possibilities.**
+*Adjust the directory names and commands according to your actual project structure.*
 
 ---
 
