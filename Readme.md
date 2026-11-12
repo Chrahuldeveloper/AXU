@@ -21,10 +21,6 @@ AXU (Android × Ubuntu) is a cross-device synchronization application that conne
   <img src="app/assets/screenshots/pic1.png" width="100%" alt="Ubuntu Desktop Widget" />
 </p>
 
-<p align="center">
-  <em>Ubuntu Desktop Widget · Android Application</em>
-</p>
-
 ---
 
 ## Features
