@@ -29,8 +29,6 @@ From monitoring your phone's battery on your desktop to receiving notifications 
   <em>Ubuntu Desktop Widget · Android Application</em>
 </p>
 
-*Replace these image paths with your actual screenshots.*
-
 ---
 
 ## Features
