@@ -115,8 +115,6 @@ npm install
 npm start
 ```
 
-*Adjust the directory names and commands according to your actual project structure.*
-
 ---
 
 ## Contributing
