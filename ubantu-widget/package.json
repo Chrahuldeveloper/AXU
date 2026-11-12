@@ -1,11 +1,23 @@
 {
-  "name": "ubantu-widget",
+  "name": "AXU",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron ."
+  },
+  "build": {
+    "appId": "com.rahul.ubuntuwidgets",
+    "productionName": "AXU",
+    "linux": {
+      "target": [
+        ".deb",
+        "snap"
+      ],
+      "category": "Utility",
+      "icon": "build/icons"
+    }
   },
   "keywords": [],
   "author": "",
