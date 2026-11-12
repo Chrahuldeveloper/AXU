@@ -80,7 +80,7 @@ async function registerBackgroundTaskAsync() {
   if(!isRegistered){
     console.log('Background task registered!');
     return BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
-      minimumInterval: 15
+      minimumInterval: 10
     });
   }
 
